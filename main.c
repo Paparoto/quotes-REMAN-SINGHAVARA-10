@@ -1,22 +1,45 @@
- #include "quotes.h"
+#include "quotes.h"
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int main() {
-    char * quotes[MAX_QUOTES] = {
-        "Programmer - An organism that turns caffeine into code",
-        "Why do programmers prefer dark mode? Because light attracts bugs.",
-        "If debugging is the process of removing software bugs, then programming must be the process of putting them in.",
-        "I don't always test my code, but when I do, I do it in production.",
-        "Why do programmers always mix up Christmas and Halloween? Because Oct 31 == Dec 25!",
-        "Why did the programmer quit his job? Because he didn't get arrays.",
-        "Why do programmers prefer iOS development? Because the Swift.",
-        "Why do programmers prefer dogs over cats? Because dogs have fetch and cats have catch.",
-        "Why do programmers hate nature? It has too many bugs.",
-        "There are only 10 types of people in the world: Those who understand binary and those who don't."
-    };
+    char path[256];
+    printf("Path :");
+    scanf("%s", path);
+    FILE *f = fopen(path, "r");
+    if (!f) {
+        printf("Failed to open quotes.txt\n");
+        return 1;
+    }
+    char buffer[MAX_LENGTH];
+    char *quotes[MAX_QUOTES];
+    int count = 0;
 
-    srand(time(NULL));
-    print_random_quote(quotes);
+    while (count < MAX_QUOTES && fgets(buffer, MAX_LENGTH, f)) {
+        buffer[strcspn(buffer, "\n")] = 0;
+        quotes[count] = strdup(buffer);
+        count++;
+    }
+    fclose(f);
+
+    printf("Loaded %d quotes.\n", count);
+
+    for (int i = 0; i < count; i++) {
+        printf("Quote %d: %s\n", i, quotes[i]);
+    }
+
+    if (count > 0) {
+        srand(time(NULL));
+        print_random_quote(quotes, count);
+    } else {
+        printf("No quotes available.\n");
+    }
+
+    for (int i = 0; i < count; i++) {
+        free(quotes[i]);
+    }
+
     return 0;
 }
-
